@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=yes, initial-scale=1, maximum-scale=1"
+    />
+    <title>chat</title>
+    <style lang="scss">
+      .content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      video {
+        transform: scaleX(-1);
+      }
+      #messagesBox {
+        width: 400px;
+        height: 200px;
+        overflow-y: scroll;
+      }
+      #messages {
+        min-height: 200px;
+        background-color: azure;
+      }
+      .inputBox {
+        display: flex;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="content">
+      <video
+        muted="false"
+        width="320"
+        autoplay
+        playsinline
+        id="localVideo"
+      ></video>
+      <audio id="audio" controls autoplay></audio>
+      <div class="btn-group">
+        <button type="button" id="enter">進入</button>
+        <button type="button" id="leave">離開</button>
+      </div>
+   
+
+      <!-- <video width="320" autoplay playsinline id="remoteVideo"></video> -->
+      <di id="remoteVideos"></div>
+
+      <div id="messagesBox">
+        <div id="messages"></div>
+      </div>
+      <div class="inputBox">
+        <input type="text" id="message" />
+        <button type="button" id="send">發送</button>
+        <button type="button" id="clean">清空</button>
+      </div>
+    </div>
+
+    <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+    <script
+      src="https://cdn.socket.io/4.7.5/socket.io.min.js"
+      integrity="sha384-2huaZvOR9iDzHqslqwpR87isEmrfxqyWOF7hr7BY6KG0+hVKLoEXMPUJw3ynWuhO"
+      crossorigin="anonymous"
+    ></script>
+    <script src="chat.js" type="module" async></script>
+  </body>
+</html>
