@@ -6,48 +6,82 @@
       name="viewport"
       content="width=device-width, user-scalable=yes, initial-scale=1, maximum-scale=1"
     />
+    <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon" />
     <title>chat</title>
     <style lang="scss">
       .content {
         display: flex;
         flex-direction: column;
         align-items: center;
+        margin: 15px;
+        padding: 15px;
+        border: 1px solid #cccccc;
+      }
+      .video-group {
+        display: flex;
+        flex-direction: row;
+        width: 800px;
+      }
+      .user-video {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 400px;
+      }
+      .user-video video {
+        width: 300px;
+        height: 220px;
       }
       video {
+        border: 1px solid #f00;
         transform: scaleX(-1);
+        width: 360px;
+      }
+      audio {
+        margin: 10px 0;
       }
       #messagesBox {
-        width: 400px;
+        width: 800px;
         height: 200px;
         overflow-y: scroll;
+        border: 1px solid #000;
+        margin-top: 15px;
       }
       #messages {
         min-height: 200px;
         background-color: azure;
       }
       .inputBox {
+        width: 800px;
         display: flex;
+        height: 40px;
+      }
+      .inputBox input {
+        flex: 1;
       }
     </style>
   </head>
   <body>
     <div class="content">
-      <video
-        muted="false"
-        width="320"
-        autoplay
-        playsinline
-        id="localVideo"
-      ></video>
-      <audio id="audio" controls autoplay></audio>
-      <div class="btn-group">
-        <button type="button" id="enter">進入</button>
-        <button type="button" id="leave">離開</button>
+      <div class="video-group">
+        <div class="user-video">
+          <video
+            muted="false"
+            width="320"
+            autoplay
+            playsinline
+            id="localVideo"
+          ></video>
+          <audio id="audio" controls autoplay></audio>
+          <div class="btn-group">
+            <button type="button" id="enter">進入</button>
+            <button type="button" id="leave">離開</button>
+          </div>
+        </div>
+        <video width="320" autoplay playsinline id="remoteVideo"></video>
       </div>
-   
 
-      <!-- <video width="320" autoplay playsinline id="remoteVideo"></video> -->
-      <di id="remoteVideos"></div>
+      <!-- <di id="remoteVideos"></div> -->
 
       <div id="messagesBox">
         <div id="messages"></div>

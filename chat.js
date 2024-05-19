@@ -15,6 +15,8 @@ const room = "room1"; // 房間先預設為 room1
 
 const hostName = location.hostname;
 
+console.log(location.href);
+
 const socketConnect = () => {
   // 伺服器連線網址：http://localhost:3000
   socket = io("ws://34.82.53.14");
