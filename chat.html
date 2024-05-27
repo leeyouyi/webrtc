@@ -8,14 +8,26 @@
     />
     <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon" />
     <title>chat</title>
-    <style lang="scss">
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
       .content {
         display: flex;
         flex-direction: column;
         align-items: center;
-        margin: 15px;
+        background: #f6ffff;
+        min-height: 100vh;
+      }
+      .wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         padding: 15px;
-        border: 1px solid #cccccc;
+        border-radius: 10px;
+        background: #4a48c4;
+        margin-top: 30px;
       }
       .video-group {
         display: flex;
@@ -33,63 +45,96 @@
         height: 220px;
       }
       video {
-        border: 1px solid #f00;
         transform: scaleX(-1);
         width: 360px;
       }
       audio {
         margin: 10px 0;
+        height: 30px;
       }
       #messagesBox {
         width: 800px;
         height: 200px;
         overflow-y: scroll;
-        border: 1px solid #000;
+        border: 1px solid #ccc;
         margin-top: 15px;
+        border-radius: 10px;
+        overflow-y: scroll;
       }
       #messages {
         min-height: 200px;
         background-color: azure;
       }
+      #messages p {
+        padding: 5px 15px;
+      }
       .inputBox {
         width: 800px;
         display: flex;
         height: 40px;
+        margin-top: 5px;
       }
       .inputBox input {
+        border: 1px solid #ccc;
+        border-radius: 10px;
         flex: 1;
+        padding: 10px;
+      }
+      button {
+        border: 1px solid #555;
+        background: transparent;
+        border-radius: 10px;
+        width: 80px;
+        height: 40px;
+        cursor: pointer;
+      }
+
+      #leave {
+        background-color: aqua;
+      }
+      #send {
+        background-color: rgb(0, 255, 191);
+      }
+      #clean {
+        background-color: aqua;
+      }
+      /* 捲軸寬度及高度 */
+      ::-webkit-scrollbar {
+        width: 0px; /*右側捲軸寬度*/
       }
     </style>
   </head>
   <body>
     <div class="content">
-      <div class="video-group">
-        <div class="user-video">
-          <video
-            muted="false"
-            width="320"
-            autoplay
-            playsinline
-            id="localVideo"
-          ></video>
-          <audio id="audio" controls autoplay></audio>
-          <div class="btn-group">
-            <button type="button" id="enter">進入</button>
-            <button type="button" id="leave">離開</button>
+      <div class="wrap">
+        <div class="video-group">
+          <div class="user-video">
+            <video
+              muted="false"
+              width="320"
+              autoplay
+              playsinline
+              id="localVideo"
+            ></video>
+            <audio id="audio" controls autoplay></audio>
+            <div class="btn-group">
+              <!-- <button type="button" id="enter">進入</button> -->
+              <button type="button" id="leave">離開</button>
+            </div>
           </div>
+          <!-- <video width="320" autoplay playsinline id="remoteVideod"></video> -->
         </div>
-        <video width="320" autoplay playsinline id="remoteVideo"></video>
-      </div>
 
-      <!-- <di id="remoteVideos"></div> -->
+        <div id="remoteVideos"></div>
 
-      <div id="messagesBox">
-        <div id="messages"></div>
-      </div>
-      <div class="inputBox">
-        <input type="text" id="message" />
-        <button type="button" id="send">發送</button>
-        <button type="button" id="clean">清空</button>
+        <div id="messagesBox">
+          <div id="messages"></div>
+        </div>
+        <div class="inputBox">
+          <input type="text" id="message" />
+          <button type="button" id="send">發送</button>
+          <button type="button" id="clean">清空</button>
+        </div>
       </div>
     </div>
 

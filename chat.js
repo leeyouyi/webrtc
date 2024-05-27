@@ -1,40 +1,41 @@
 const localVideo = document.querySelector("#localVideo");
 const remoteVideos = document.querySelector("#remoteVideos");
-const enterBtn = document.querySelector("#enter");
 const leaveBtn = document.querySelector("#leave");
 const sendBtn = document.querySelector("#send");
 const messages = document.querySelector("#messages");
 const cleanBtn = document.querySelector("#clean");
 const audio = document.querySelector("#audio");
 
-// let peerConnection;
 let peerConnectionList = {};
 let socket;
 let localStream;
 const room = "room1"; // 房間先預設為 room1
 
 const hostName = location.hostname;
-
 console.log(location.href);
 
+const nickname = decodeURI(location.search.split("=")[1]);
+
+/** socket 連接 */
 const socketConnect = () => {
+  console.log("socketConnect");
   // 伺服器連線網址：http://localhost:3000
-  socket = io("ws://34.82.53.14");
-  // socket = io("ws://localhost:3000");
+  // socket = io("ws://34.82.53.14");
+  socket = io("ws://localhost:3000");
 
   socket.on("connect", () => {
     console.log("client connect");
   });
 
   socket.on("broadcast", (msg) => {
-    console.log(msg);
     appendMessage(msg);
   });
   // 發送房間資訊
-  socket.emit("join", room);
+  socket.emit("join", room, nickname);
 
   // 3. 監聽有裝置加入房間
-  socket.on("joined", (id, roomMembers) => {
+  socket.on("joined", (id, roomMembers, nickname) => {
+    appendNotice(`"${nickname}" 加入聊天室`);
     // 檢查 server 傳來的 socket.id 是否等於自己的 socket.id
     // 且聊天室裝置大於一，依序發送 Offer SDP
     if (id === socket.id && roomMembers.length > 1) {
@@ -82,12 +83,18 @@ const socketConnect = () => {
 
   const sendText = () => {
     const message = document.querySelector("#message").value;
-    socket.emit("message", message);
-    appendMessage(message, true);
+    socket.emit("message", { message, nickname });
+    appendMessage({ message, nickname }, true);
+  };
+  const handleKeyUp = (e) => {
+    if (e.keyCode === 13) {
+      sendText();
+    }
   };
   sendBtn.addEventListener("click", sendText);
+  document.querySelector("#message").addEventListener("keyup", handleKeyUp);
 };
-
+// SDP 會話描述協議 Session Description Protocol
 const setOfferSDP = async (remoteId) => {
   // 1. 建立 RTCPeerConnection
   const peerConnection = await createPeerConnection(remoteId);
@@ -141,6 +148,7 @@ const sendAnswerSDP = async (remoteId, desc) => {
   );
 };
 
+// 建立本地媒體串流
 const createStream = async () => {
   try {
     const constraints = { audio: true, video: true };
@@ -154,6 +162,8 @@ const createStream = async () => {
     audio.srcObject = stream;
     // 傳出媒體串流
     localStream = stream;
+    // localStream 有媒體串流後建立 P2P 連線
+    createPeerConnection(); // 建立 P2P 連線
   } catch (err) {
     console.log("stream: ", err.message, err.name);
   }
@@ -241,12 +251,6 @@ const createPeerConnection = async (remoteId) => {
   return peerConnection;
 };
 
-// 開始連線
-const enter = () => {
-  socketConnect(); // socket 連線
-  createPeerConnection(); // 建立 P2P 連線
-};
-
 // 關閉連線
 const leave = () => {
   console.log("離開聊天室");
@@ -271,24 +275,45 @@ const leave = () => {
   // 5. 傳遞離開聊天室事件
   socket.emit("disconnect_socket");
   socket = null;
+
+  window.location.href = "/";
 };
 
-const appendMessage = (msg, user) => {
+const appendNotice = (notice) => {
   const p = document.createElement("p");
-  p.style.textAlign = !user ? "left" : "right";
-  const text = document.createTextNode(msg);
+  p.style.textAlign = "center";
+  const text = document.createTextNode(notice);
+  p.append(text);
+  messages.appendChild(p);
+  document.querySelector("#message").value = "";
+
+  const messagesBox = document.querySelector("#messagesBox");
+  messagesBox.scrollTop = messagesBox.scrollHeight;
+};
+
+const appendMessage = (msg, isUser) => {
+  const p = document.createElement("p");
+  p.style.textAlign = !isUser ? "left" : "right";
+  const text = document.createTextNode(msg.message);
   const span = document.createElement("span");
-  const name = document.createTextNode(!user ? "(guest): " : "(user): ");
+  const guest = msg.nickname !== "" ? msg.nickname : "Guest";
+  const name = document.createTextNode(
+    !isUser ? `${guest}: ` : `${nickname}: `
+  );
   span.appendChild(name);
   p.append(name, text);
   messages.appendChild(p);
   document.querySelector("#message").value = "";
+
+  const messagesBox = document.querySelector("#messagesBox");
+  messagesBox.scrollTop = messagesBox.scrollHeight;
 };
 
 const clean = () => {
   messages.innerHTML = "";
 };
 
-enterBtn.addEventListener("click", enter);
 leaveBtn.addEventListener("click", leave);
 cleanBtn.addEventListener("click", clean);
+
+socketConnect(); // socket 連線

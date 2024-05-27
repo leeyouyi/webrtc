@@ -1,7 +1,6 @@
 const express = require("express");
 const app = express();
 const { createServer } = require("http");
-// const socket = require("socket.io");
 const { Server } = require("socket.io");
 
 const httpServer = createServer(app);
@@ -11,10 +10,11 @@ const io = new Server(httpServer, {
   },
 });
 
-// const server = http.createServer(app).listen("3000");
-
 // html 路徑轉換
 app.get("/", function (req, res) {
+  res.sendFile(`${__dirname}/index.html`);
+});
+app.get("/chat", function (req, res) {
   res.sendFile(`${__dirname}/chat.html`);
 });
 
@@ -27,23 +27,21 @@ io.on("connection", (socket) => {
   console.log("connection");
   let roomNumber;
   // 加入房間
-  socket.on("join", (room) => {
+  socket.on("join", (room, nickname) => {
     console.log("join");
-    console.log({ room });
     roomNumber = room;
     socket.join(room);
     // 取得加入聊天室裝置的 socket.id
     const members = Array.from(socket.adapter.rooms.get(room));
-    console.log({ members });
     // 向所有裝置告知有新裝置加入（包含自己）
-    io.in(room).emit("joined", socket.id, members);
+    io.in(room).emit("joined", socket.id, members, nickname);
   });
 
   // 傳送訊息
-  socket.on("message", (message) => {
-    console.log(message);
+  socket.on("message", (user) => {
+    console.log(user);
     // io.emit("broadcast", message);
-    socket.to(roomNumber).emit("broadcast", message);
+    socket.to(roomNumber).emit("broadcast", user);
   });
 
   // 轉傳 Offer
@@ -58,9 +56,6 @@ io.on("connection", (socket) => {
 
   // 交換 ice candidate
   socket.on("ice_candidate", (room, data, remoteId, localId) => {
-    // console.log("ice_candidate", data);
-    // console.log("remoteIde", remoteId);
-    // console.log("localId", localId);
     socket.to(localId).emit("ice_candidate", data, remoteId);
   });
   // 裝置離開聊天室
