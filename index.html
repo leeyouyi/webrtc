@@ -31,6 +31,11 @@
       border: 1px solid #ccc;
       padding: 0 10px;
     }
+    btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
     button {
       border: 1px solid #555;
       background: transparent;
@@ -38,10 +43,17 @@
       width: 80px;
       height: 40px;
       cursor: pointer;
+      margin-left: 10px;
     }
     button:hover {
       background: #3060a0;
       color: #f6ffff;
+    }
+    @media screen and (max-width: 767px) {
+      button {
+        margin-top: 20px;
+        margin-left: 0px;
+      }
     }
   </style>
 

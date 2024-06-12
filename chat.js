@@ -12,7 +12,6 @@ let localStream;
 const room = "room1"; // 房間先預設為 room1
 
 const hostName = location.hostname;
-console.log(location.href);
 
 const nickname = decodeURI(location.search.split("=")[1]);
 
@@ -20,8 +19,8 @@ const nickname = decodeURI(location.search.split("=")[1]);
 const socketConnect = () => {
   console.log("socketConnect");
   // 伺服器連線網址：http://localhost:3000
-  // socket = io("ws://34.82.53.14");
-  socket = io("ws://localhost:3000");
+  socket = io("ws://34.82.53.14");
+  // socket = io("ws://localhost:3000");
 
   socket.on("connect", () => {
     console.log("client connect");
@@ -97,6 +96,8 @@ const socketConnect = () => {
 // SDP 會話描述協議 Session Description Protocol
 const setOfferSDP = async (remoteId) => {
   // 1. 建立 RTCPeerConnection
+  await createStream();
+
   const peerConnection = await createPeerConnection(remoteId);
 
   const offerOptions = {
@@ -159,11 +160,11 @@ const createStream = async () => {
     // Dom 設置本地媒體串流
     localVideo.srcObject = stream;
     // const audioTracks = stream.getAudioTracks();
-    audio.srcObject = stream;
+    // audio.srcObject = stream;
     // 傳出媒體串流
     localStream = stream;
     // localStream 有媒體串流後建立 P2P 連線
-    createPeerConnection(); // 建立 P2P 連線
+    // createPeerConnection(); // 建立 P2P 連線
   } catch (err) {
     console.log("stream: ", err.message, err.name);
   }
@@ -186,6 +187,7 @@ const createPeerConnection = async (remoteId) => {
   const peerConnection = new RTCPeerConnection(configuration);
 
   // 3. 增加本地媒體串流
+
   localStream.getTracks().forEach((track) => {
     peerConnection.addTrack(track, localStream);
   });
@@ -214,7 +216,8 @@ const createPeerConnection = async (remoteId) => {
   peerConnection.oniceconnectionstatechange = (e) => {
     if (e.target.iceConnectionState === "disconnected") {
       console.log("有裝置斷線");
-
+      console.log(e);
+      // appendNotice(`"${nickname}" 加入聊天室`);
       // 移除事件監聽
       peerConnectionList[remoteId].onicecandidate = null;
       peerConnectionList[remoteId].onnegotiationneeded = null;
@@ -232,15 +235,16 @@ const createPeerConnection = async (remoteId) => {
   // 6. 監聽遠端裝置的串流傳入
   peerConnection.onaddstream = ({ stream }) => {
     console.log("監聽到串流");
+    // remoteVideo.srcObject = stream;
     const video = document.createElement("video");
     video.srcObject = stream;
-    video.setAttribute("controls", true);
+    // video.setAttribute("controls", true);
     video.setAttribute("playsinline", true);
     video.setAttribute("autoplay", true);
-    video.setAttribute("muted", true);
-    video.setAttribute("volume", 0);
-    video.removeAttribute("controls");
-    video.classList.add("remote-video");
+    // video.setAttribute("muted", true);
+    // video.setAttribute("volume", 0);
+    // video.removeAttribute("controls");
+    // video.classList.add("remote-video");
     video.id = remoteId;
     remoteVideos.append(video);
   };
