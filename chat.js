@@ -19,8 +19,8 @@ const nickname = decodeURI(location.search.split("=")[1]);
 const socketConnect = () => {
   console.log("socketConnect");
   // 伺服器連線網址：http://localhost:3000
-  socket = io("ws://34.82.53.14");
-  // socket = io("ws://localhost:3000");
+  // socket = io("ws://34.82.53.14");
+  socket = io("ws://localhost:3000");
 
   socket.on("connect", () => {
     console.log("client connect");
@@ -160,7 +160,7 @@ const createStream = async () => {
     // Dom 設置本地媒體串流
     localVideo.srcObject = stream;
     // const audioTracks = stream.getAudioTracks();
-    // audio.srcObject = stream;
+    audio.srcObject = stream;
     // 傳出媒體串流
     localStream = stream;
     // localStream 有媒體串流後建立 P2P 連線
